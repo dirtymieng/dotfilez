@@ -37,8 +37,8 @@ opt.backup = false
 -- Clipboard: use system clipboard
 opt.clipboard = "unnamedplus"
 
-vim.o.background = "light"
-vim.cmd.colorscheme("dirtytheme")
+vim.o.background = "dark"
+vim.cmd.colorscheme("zig")
 
 -- Better completion menu
 opt.completeopt = { "menu", "menuone", "noselect" }

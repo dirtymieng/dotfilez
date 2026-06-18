@@ -40,3 +40,13 @@ map("n", "[d", vim.diagnostic.goto_prev,  { desc = "Prev diagnostic" })
 map("n", "]d", vim.diagnostic.goto_next,  { desc = "Next diagnostic" })
 map("n", "<leader>e", vim.diagnostic.open_float, { desc = "Open diagnostic float" })
 map("n", "<leader>dl", vim.diagnostic.setloclist, { desc = "Diagnostics to loclist" })
+
+-- FzfLua
+map("n", "<leader>ff", "<cmd>FzfLua files<cr>",                { desc = "Find files" })
+map("n", "<leader>fg", "<cmd>FzfLua live_grep<cr>",            { desc = "Live grep" })
+map("n", "<leader>fb", "<cmd>FzfLua buffers<cr>",              { desc = "Buffers" })
+map("n", "<leader>fr", "<cmd>FzfLua oldfiles<cr>",             { desc = "Recent files" })
+map("n", "<leader>fd", "<cmd>FzfLua diagnostics_document<cr>", { desc = "Document diagnostics" })
+map("n", "<leader>fs", "<cmd>FzfLua lsp_document_symbols<cr>", { desc = "Document symbols" })
+map("n", "<leader>fc", "<cmd>FzfLua lsp_incoming_calls<cr>",   { desc = "Incoming calls" })
+map("n", "gr",         "<cmd>FzfLua lsp_references<cr>",        { desc = "LSP references" })
