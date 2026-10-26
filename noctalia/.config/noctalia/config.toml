@@ -1,0 +1,3 @@
+# Let sway's `output * bg` handle the wallpaper
+[wallpaper]
+enabled = false
