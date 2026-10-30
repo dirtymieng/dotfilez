@@ -1,0 +1,6 @@
+# Per-machine nvim settings
+nvim/.config/nvim/lua/local.lua
+
+# Editor swap/backup files
+*.swp
+*~

@@ -12,16 +12,25 @@ vim.api.nvim_create_autocmd("LspAttach", {
     local map = vim.keymap.set
     local opts = { buffer = args.buf, silent = true }
 
-    map("n", "gd",         vim.lsp.buf.definition,     vim.tbl_extend("force", opts, { desc = "Go to definition" }))
-    map("n", "gD",         vim.lsp.buf.declaration,    vim.tbl_extend("force", opts, { desc = "Go to declaration" }))
-    map("n", "gi",         vim.lsp.buf.implementation, vim.tbl_extend("force", opts, { desc = "Go to implementation" }))
-map("n", "K",          vim.lsp.buf.hover,          vim.tbl_extend("force", opts, { desc = "Hover docs" }))
-    map("n", "<C-k>",      vim.lsp.buf.signature_help, vim.tbl_extend("force", opts, { desc = "Signature help" }))
-    map("n", "<leader>rn", vim.lsp.buf.rename,         vim.tbl_extend("force", opts, { desc = "Rename symbol" }))
-    map("n", "<leader>ca", vim.lsp.buf.code_action,    vim.tbl_extend("force", opts, { desc = "Code action" }))
-    map("n", "<leader>f",  function()
-      vim.lsp.buf.format({ async = true })
-    end, vim.tbl_extend("force", opts, { desc = "Format buffer" }))
+    local function o(desc) return vim.tbl_extend("force", opts, { desc = desc }) end
+    local fzf = require("fzf-lua")
+
+    -- Doom's evil lookup keys
+    map("n", "gd", vim.lsp.buf.definition, o("Jump to definition"))
+    map("n", "gD", fzf.lsp_references,     o("Find references"))
+    map("n", "K",  vim.lsp.buf.hover,      o("Documentation"))
+    map("i", "<C-k>", vim.lsp.buf.signature_help, o("Signature help"))
+
+    -- SPC c: code
+    map("n", "<leader>ca", vim.lsp.buf.code_action,  o("Code action"))
+    map("n", "<leader>cr", vim.lsp.buf.rename,       o("Rename"))
+    map({ "n", "v" }, "<leader>cf", function() vim.lsp.buf.format({ async = true }) end, o("Format buffer/region"))
+    map("n", "<leader>cd", vim.lsp.buf.definition,   o("Jump to definition"))
+    map("n", "<leader>cD", fzf.lsp_references,       o("Jump to references"))
+    map("n", "<leader>ci", fzf.lsp_implementations,  o("Find implementations"))
+    map("n", "<leader>ct", fzf.lsp_typedefs,         o("Find type definition"))
+    map("n", "<leader>ck", vim.lsp.buf.hover,        o("Jump to documentation"))
+    map("n", "<leader>cj", fzf.lsp_live_workspace_symbols, o("Jump to symbol in workspace"))
   end,
 })
 
@@ -106,5 +115,37 @@ vim.lsp.config("terraformls", {
   root_markers = { ".terraform", ".git" },
 })
 
--- Enable all configured servers (only activates if the binary is on PATH)
-vim.lsp.enable({ "gopls", "zls", "clangd", "pyright", "yamlls", "terraformls" })
+-- ── Nix ───────────────────────────────────────────────────────────────────────
+-- Completes NixOS options from the flake in ~/nixos
+local nixos_flake = 'builtins.getFlake "' .. vim.fn.expand("~/nixos") .. '"'
+vim.lsp.config("nixd", {
+  cmd          = { "nixd" },
+  filetypes    = { "nix" },
+  root_markers = { "flake.nix", ".git" },
+  settings = {
+    nixd = {
+      nixpkgs    = { expr = "import (" .. nixos_flake .. ").inputs.nixpkgs {}" },
+      formatting = { command = { "nixfmt" } },
+      options    = {
+        nixos = { expr = "(" .. nixos_flake .. ").nixosConfigurations.nuccu.options" },
+      },
+    },
+  },
+})
+
+-- Enable each server only if its program is installed on this machine,
+-- so the same config works at home and at work.
+local servers = {
+  gopls       = "gopls",
+  zls         = "zls",
+  clangd      = "clangd",
+  pyright     = "pyright-langserver",
+  yamlls      = "yaml-language-server",
+  terraformls = "terraform-ls",
+  nixd        = "nixd",
+}
+for name, bin in pairs(servers) do
+  if vim.fn.executable(bin) == 1 then
+    vim.lsp.enable(name)
+  end
+end

@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # setup.sh — first-time setup helper
 # At work: configure your HTTP proxy so git/curl can reach GitHub, then run nvim.
-# lazy.nvim will install plugins automatically on first launch.
 set -euo pipefail
 
 # ── Proxy configuration ────────────────────────────────────────────────────────
@@ -36,4 +35,3 @@ echo "    Terraform: https://releases.hashicorp.com/terraform-ls/"
 echo ""
 echo "    Verify: which gopls zls clangd pyright yaml-language-server terraform-ls"
 echo ""
-echo "==> Then just launch nvim — lazy.nvim will install plugins on first run."
